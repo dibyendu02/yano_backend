@@ -6,6 +6,7 @@ const cors = require("cors");
 const cloudinary = require("cloudinary");
 
 //import routes
+const authRoutes = require("./src/routes/login.js");
 const doctorRoutes = require("./src/routes/userDoctor.js");
 const patientRoutes = require("./src/routes/userPatient.js");
 const bloodGlucoseRoutes = require("./src/routes/bloodGlucoseRoutes.js");
@@ -48,6 +49,7 @@ app.use(express.json());
 app.use(cors());
 
 //routes
+app.use("/api", authRoutes);
 app.use("/api/userdoctor", doctorRoutes);
 app.use("/api/userpatient", patientRoutes);
 app.use("/api/blood-glucose", bloodGlucoseRoutes);
