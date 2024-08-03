@@ -4,8 +4,16 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const cloudinary = require("cloudinary");
-const doctorRoutes = require("./routes/userDoctor.js");
-const patientRoutes = require("./routes/userPatient.js");
+
+//import routes
+const doctorRoutes = require("./src/routes/userDoctor.js");
+const patientRoutes = require("./src/routes/userPatient.js");
+const bloodGlucoseRoutes = require("./src/routes/bloodGlucoseRoutes.js");
+const bloodPressureRoutes = require("./src/routes/bloodPressureRoutes.js");
+const bloodOxygenRoutes = require("./src/routes/bloodOxygenRoutes.js");
+const heartRateRoutes = require("./src/routes/heartRateRoutes.js");
+const bodyTempRoutes = require("./src/routes/bodyTempRoutes.js");
+const ecgRoutes = require("./src/routes/ecgRoutes.js");
 
 dotenv.config();
 const app = express();
@@ -21,7 +29,6 @@ cloudinary.v2.config({
 });
 
 //databse connection
-
 const connectionParams = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -43,6 +50,12 @@ app.use(cors());
 //routes
 app.use("/api/userdoctor", doctorRoutes);
 app.use("/api/userpatient", patientRoutes);
+app.use("/api/blood-glucose", bloodGlucoseRoutes);
+app.use("/api/blood-pressure", bloodPressureRoutes);
+app.use("/api/blood-oxygen", bloodOxygenRoutes);
+app.use("/api/heart-rate", heartRateRoutes);
+app.use("/api/body-temp", bodyTempRoutes);
+app.use("/api/ecg", ecgRoutes);
 
 app.listen(PORT, () => {
   console.log(`app running on port ${PORT}`);

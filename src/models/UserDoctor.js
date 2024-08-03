@@ -8,6 +8,7 @@ const UserDoctorSchema = new Schema(
       public_id: { type: String },
       secure_url: { type: String },
     },
+    userType: { type: String, default: "provider" },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
