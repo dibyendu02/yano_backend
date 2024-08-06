@@ -32,10 +32,16 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if user already exists
-    const existingUser = await UserDoctor.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    // Check if email already exists
+    const existingEmail = await UserDoctor.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Check if phone number already exists
+    const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
+    if (existingPhoneNumber) {
+      return res.status(400).json({ message: "Phone number already exists" });
     }
 
     // Hash the password

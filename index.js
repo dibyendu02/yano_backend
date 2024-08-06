@@ -29,6 +29,16 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Middleware to parse JSON bodies
+// app.use(express.json());
+
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
 //databse connection
 const connectionParams = {
   useNewUrlParser: true,

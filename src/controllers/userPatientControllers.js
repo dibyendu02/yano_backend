@@ -24,27 +24,30 @@ exports.patientSignup = async (req, res) => {
     bloodType,
   } = req.body;
 
+  // Check for missing required fields
+  if (
+    !firstName ||
+    !lastName ||
+    !email ||
+    !phoneNumber ||
+    !gender ||
+    !dateOfBirth ||
+    !password
+  ) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
   try {
-    // Validate input
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !phoneNumber ||
-      !gender ||
-      !dateOfBirth ||
-      !password ||
-      !height ||
-      !weight ||
-      !bloodType
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Check if email already exists
+    const existingEmail = await UserPatient.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Check if user already exists
-    const existingUser = await UserPatient.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    // Check if phone number already exists
+    const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
+    if (existingPhoneNumber) {
+      return res.status(400).json({ message: "Phone number already exists" });
     }
 
     // Hash the password
@@ -96,7 +99,7 @@ exports.patientSignup = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error during patient signup:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -135,7 +138,7 @@ exports.patientLogin = async (req, res) => {
       .status(200)
       .json({ message: "Login successful", userData: user, token });
   } catch (error) {
-    console.error(error);
+    console.error("Error during patient login:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -152,7 +155,7 @@ exports.findPatientById = async (req, res) => {
 
     res.status(200).json({ userData: patient });
   } catch (error) {
-    console.error(error);
+    console.error("Error finding patient by ID:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
