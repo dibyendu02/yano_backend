@@ -160,6 +160,21 @@ exports.findPatientById = async (req, res) => {
   }
 };
 
+exports.getAllPatients = async (req, res) => {
+  try {
+    const patients = await UserPatient.find();
+
+    if (patients.length === 0) {
+      return res.status(404).json({ message: "No patients found" });
+    }
+
+    res.status(200).json({ userData: patients });
+  } catch (error) {
+    console.error("Error retrieving patients:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // exports.verifyPhone = async (req, res) => {
 //   const { phone } = req.body;
 //   try {

@@ -4,6 +4,7 @@ const {
   patientSignup,
   patientLogin,
   findPatientById,
+  getAllPatients,
 } = require("../controllers/userPatientControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
@@ -16,5 +17,8 @@ router.post("/login", patientLogin);
 // router.post("/phone-verify", verifyToken, verifyPhone);
 // Find patient by ID route
 router.get("/:id", findPatientById);
+
+//get all patients
+router.get("/", getAllPatients);
 
 module.exports = router;
