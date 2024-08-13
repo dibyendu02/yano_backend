@@ -37,6 +37,8 @@ exports.patientSignup = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
 
+  console.log(req.body);
+
   try {
     // Check if email already exists
     const existingEmail = await UserPatient.findOne({ email });

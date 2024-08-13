@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const UserDoctor = require("../models/UserDoctor");
 
 const { Schema } = mongoose;
 
@@ -17,6 +18,7 @@ const UserPatientSchema = new Schema(
     },
     userType: { type: String, default: "patient" },
     firstName: { type: String, required: true },
+    doctor: { type: mongoose.Schema.Types.ObjectId, ref: "UserDoctor" },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     phoneNumber: { type: String, required: true, unique: true },
