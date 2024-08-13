@@ -11,7 +11,14 @@ exports.addBloodOxygen = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+exports.getAllBloodOxygen = async (req, res) => {
+  try {
+    const records = await BloodOxygen.find();
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 exports.editBloodOxygen = async (req, res) => {
   const { id } = req.params;
   const { data, unit } = req.body;
