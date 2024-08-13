@@ -11,7 +11,14 @@ exports.addBodyTemp = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+exports.getAllBodyTemps = async (req, res) => {
+  try {
+    const bodyTemps = await BodyTemp.find();
+    res.status(200).json(bodyTemps);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 exports.editBodyTemp = async (req, res) => {
   const { id } = req.params;
   const { data, unit } = req.body;
