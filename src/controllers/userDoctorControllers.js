@@ -10,27 +10,24 @@ exports.signup = async (req, res) => {
     firstName,
     lastName,
     email,
+    password,
     phoneNumber,
     gender,
     dateOfBirth,
     speciality,
-    password,
+    userType, // Role name, optional
   } = req.body;
 
   try {
-    // Validate input
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !phoneNumber ||
-      !gender ||
-      !dateOfBirth ||
-      !speciality ||
-      !password
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Validate required input
+    if (!firstName || !lastName || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be provided" });
     }
+
+    // Normalize userType (role name) to lowercase if provided, else default to 'doctor'
+    const normalizedUserType = userType ? userType.toLowerCase() : "doctor";
 
     // Check if email already exists
     const existingEmail = await UserDoctor.findOne({ email });
@@ -39,9 +36,11 @@ exports.signup = async (req, res) => {
     }
 
     // Check if phone number already exists
-    const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
-    if (existingPhoneNumber) {
-      return res.status(400).json({ message: "Phone number already exists" });
+    if (phoneNumber) {
+      const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
+      if (existingPhoneNumber) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
     }
 
     // Hash the password
@@ -63,11 +62,12 @@ exports.signup = async (req, res) => {
       firstName,
       lastName,
       email,
+      password: hashedPassword,
+      userType: normalizedUserType, // Store the userType in lowercase
       phoneNumber,
       gender,
       dateOfBirth,
       speciality,
-      password: hashedPassword,
     });
 
     // Save the doctor to the database
@@ -78,7 +78,7 @@ exports.signup = async (req, res) => {
       { id: newDoctor._id, email: newDoctor.email },
       process.env.JWT_SECRET,
       {
-        expiresIn: "7d", // Token expires in
+        expiresIn: "7d", // Token expires in 7 days
       }
     );
 

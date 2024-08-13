@@ -3,12 +3,6 @@ const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 const UserPatient = require("../models/UserPatient");
 const { getDataUri } = require("../utils/feature"); // Adjust the path based on your project structure
-// const twilio = require("twilio");
-// const twilioClient = twilio(
-//   process.env.TWILIO_ACCOUNT_SID,
-//   process.env.TWILIO_AUTH_TOKEN
-// );
-// const verifyServiceSid = process.env.VERIFY_SERVICE_SID;
 
 exports.patientSignup = async (req, res) => {
   const {
@@ -22,6 +16,8 @@ exports.patientSignup = async (req, res) => {
     height,
     weight,
     bloodType,
+    country, // New field
+    familyLink, // New field
   } = req.body;
 
   // Check for missing required fields
@@ -29,15 +25,14 @@ exports.patientSignup = async (req, res) => {
     !firstName ||
     !lastName ||
     !email ||
-    !phoneNumber ||
     !gender ||
     !dateOfBirth ||
     !password
   ) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res
+      .status(400)
+      .json({ message: "All required fields must be provided" });
   }
-
-  console.log(req.body);
 
   try {
     // Check if email already exists
@@ -47,9 +42,11 @@ exports.patientSignup = async (req, res) => {
     }
 
     // Check if phone number already exists
-    const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
-    if (existingPhoneNumber) {
-      return res.status(400).json({ message: "Phone number already exists" });
+    if (phoneNumber) {
+      const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
+      if (existingPhoneNumber) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
     }
 
     // Hash the password
@@ -78,6 +75,9 @@ exports.patientSignup = async (req, res) => {
       height,
       weight,
       bloodType,
+      country, // Added country
+      familyLink, // Added familyLink
+      sessionCount: 0, // Default value
       isEmailVerified: false,
       isPhoneVerified: false,
       devices: [], // Assuming devices array starts empty
@@ -101,49 +101,48 @@ exports.patientSignup = async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error("Error during patient signup:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
 
-exports.patientLogin = async (req, res) => {
-  const { email, password } = req.body;
+// exports.patientLogin = async (req, res) => {
+//   const { email, password } = req.body;
 
-  try {
-    // Validate input
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required" });
-    }
+//   try {
+//     // Validate input
+//     if (!email || !password) {
+//       return res
+//         .status(400)
+//         .json({ message: "Email and password are required" });
+//     }
 
-    // Check if user exists
-    const user = await UserPatient.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+//     // Check if user exists
+//     const user = await UserPatient.findOne({ email });
+//     if (!user) {
+//       return res.status(400).json({ message: "Invalid email or password" });
+//     }
 
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+//     // Check password
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid email or password" });
+//     }
 
-    // Generate JWT
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" } // Token expires in 7 days
-    );
+//     // Generate JWT
+//     const token = jwt.sign(
+//       { id: user._id, email: user.email },
+//       process.env.JWT_SECRET,
+//       { expiresIn: "7d" } // Token expires in 7 days
+//     );
 
-    res
-      .status(200)
-      .json({ message: "Login successful", userData: user, token });
-  } catch (error) {
-    console.error("Error during patient login:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-};
+//     res
+//       .status(200)
+//       .json({ message: "Login successful", userData: user, token });
+//   } catch (error) {
+//     console.error("Error during patient login:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
 
 exports.findPatientById = async (req, res) => {
   const { id } = req.params;
@@ -177,28 +176,29 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
-// exports.verifyPhone = async (req, res) => {
-//   const { phone } = req.body;
-//   try {
-//     // Find or create user by phone number
-//     let user = await UserPatient.findOne({ phoneNumber: phone });
+exports.updatePatient = async (req, res) => {
+  const { id } = req.params;
+  const updateData = req.body;
 
-//     if (!user) {
-//       res.status(404).send({ success: false, error: "no user found" });
-//     } else {
-//       // Send OTP to the user's phone using Twilio Verify
-//       const verification = await twilioClient.verify.v2 // .services(verifyServiceSid)
-//         .services(verifyServiceSid)
-//         .verifications.create({ to: phone, channel: "sms" });
+  try {
+    // Find the patient by ID and update with the data provided in the request body
+    const patient = await UserPatient.findByIdAndUpdate(
+      id,
+      { $set: updateData }
+      // { new: true, runValidators: true } // Return the updated document and run validators
+    );
 
-//       console.log(verification.status);
+    console.log(patient);
 
-//       console.log(`Sent verification: '${verification.sid}'`);
-//       res
-//         .status(200)
-//         .send({ success: true, message: "OTP sent to your phone." });
-//     }
-//   } catch (error) {
-//     res.status(500).send({ success: false, error: error });
-//   }
-// };
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Patient updated successfully", userData: patient });
+  } catch (error) {
+    console.error("Error updating patient:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

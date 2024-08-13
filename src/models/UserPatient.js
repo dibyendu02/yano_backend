@@ -10,6 +10,15 @@ const DeviceSchema = new Schema({
   lastSynced: { type: Date },
 });
 
+const FamilyLinkSchema = new Schema({
+  relation: { type: String, required: true },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserPatient",
+    required: true,
+  },
+});
+
 const UserPatientSchema = new Schema(
   {
     userImg: {
@@ -18,19 +27,22 @@ const UserPatientSchema = new Schema(
     },
     userType: { type: String, default: "patient" },
     firstName: { type: String, required: true },
-    doctor: { type: mongoose.Schema.Types.ObjectId, ref: "UserDoctor" },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    phoneNumber: { type: String, required: true, unique: true },
-    gender: { type: String, required: true },
     dateOfBirth: { type: Date, required: true },
-    password: { type: String, required: true },
+    gender: { type: String, required: true },
+    password: { type: String },
+    phoneNumber: { type: String, unique: true }, // Optional, not required
+    doctor: { type: mongoose.Schema.Types.ObjectId, ref: "UserDoctor" },
     isEmailVerified: { type: Boolean, default: false },
     isPhoneVerified: { type: Boolean, default: false },
     height: { type: Number }, // in cm
     weight: { type: Number }, // in kg
     bloodType: { type: String },
     devices: [DeviceSchema],
+    sessionCount: { type: Number, default: 0 }, // New field with default value 0
+    country: { type: String }, // New field
+    familyLink: [FamilyLinkSchema], // New field
   },
   { timestamps: true }
 );
