@@ -180,15 +180,17 @@ exports.updatePatient = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
+  console.log(req.body);
+
   try {
     // Find the patient by ID and update with the data provided in the request body
-    const patient = await UserPatient.findByIdAndUpdate(
-      id,
-      { $set: updateData }
-      // { new: true, runValidators: true } // Return the updated document and run validators
+    const patient = await UserPatient.findOneAndUpdate(
+      { _id: id },
+      { $set: updateData },
+      { new: true } // Return the updated document and run validators
     );
 
-    console.log(patient);
+    // console.log(patient);
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
@@ -199,6 +201,68 @@ exports.updatePatient = async (req, res) => {
       .json({ message: "Patient updated successfully", userData: patient });
   } catch (error) {
     console.error("Error updating patient:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//create family member
+
+exports.createFamilyMember = async (req, res) => {
+  const { firstName, lastName, email, dateOfBirth, gender } = req.body;
+
+  console.log(req.body);
+
+  try {
+    // Create a new patient account
+    const newPatient = new UserPatient({
+      firstName,
+      lastName,
+      email,
+      dateOfBirth,
+      gender,
+      userType: "patient", // Ensuring the userType is "patient"
+    });
+
+    const savedPatient = await newPatient.save();
+
+    res.status(201).json({
+      message: "Family member created successfully",
+      familyMember: savedPatient,
+    });
+  } catch (error) {
+    console.error("Error creating family member:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//link family member
+
+exports.linkFamilyMember = async (req, res) => {
+  const { patientId, familyMemberId } = req.params; // IDs of the existing patient and the family member
+  const { relation } = req.body;
+
+  try {
+    // Find the existing patient by ID
+    const existingPatient = await UserPatient.findById(patientId);
+
+    if (!existingPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Add the new patient's userId to the familyLink array with the relation
+    existingPatient.familyLink.push({
+      relation,
+      userId: familyMemberId,
+    });
+
+    await existingPatient.save();
+
+    res.status(200).json({
+      message: "Family member linked successfully",
+      updatedPatient: existingPatient,
+    });
+  } catch (error) {
+    console.error("Error linking family member:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

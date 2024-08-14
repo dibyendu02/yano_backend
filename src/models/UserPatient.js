@@ -40,6 +40,7 @@ const UserPatientSchema = new Schema(
     weight: { type: Number }, // in kg
     bloodType: { type: String },
     devices: [DeviceSchema],
+
     sessionCount: { type: Number, default: 0 }, // New field with default value 0
     country: { type: String }, // New field
     familyLink: [FamilyLinkSchema], // New field
