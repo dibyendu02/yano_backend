@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const BloodOxygenSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "UserPatient", required: true },
+    age: { type: Number, required: true },
     data: { type: Number, required: true },
     unit: { type: String, required: true, enum: ["%"] }, // Assuming percentage as the unit
   },

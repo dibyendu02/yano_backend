@@ -1,10 +1,10 @@
 const BodyTemp = require("../models/BodyTemp");
 
 exports.addBodyTemp = async (req, res) => {
-  const { userId, data, unit } = req.body;
+  const { userId, age, data, unit } = req.body;
 
   try {
-    const newRecord = new BodyTemp({ userId, data, unit });
+    const newRecord = new BodyTemp({ userId, age, data, unit });
     await newRecord.save();
     res.status(201).json(newRecord);
   } catch (error) {

@@ -1,10 +1,10 @@
 const BloodOxygen = require("../models/BloodOxygen");
 
 exports.addBloodOxygen = async (req, res) => {
-  const { userId, data, unit } = req.body;
+  const { userId, age, data, unit } = req.body;
 
   try {
-    const newRecord = new BloodOxygen({ userId, data, unit });
+    const newRecord = new BloodOxygen({ userId, age, data, unit });
     await newRecord.save();
     res.status(201).json(newRecord);
   } catch (error) {

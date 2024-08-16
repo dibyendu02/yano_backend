@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 const HeartRateSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "UserPatient", required: true },
+    age: { type: Number, required: true },
     data: { type: Number, required: true },
     unit: { type: String, required: true, enum: ["bpm"] }, // Assuming beats per minute as the unit
   },

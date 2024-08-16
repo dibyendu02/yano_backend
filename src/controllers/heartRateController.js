@@ -1,10 +1,10 @@
 const HeartRate = require("../models/HeartRate");
 
 exports.addHeartRate = async (req, res) => {
-  const { userId, data, unit } = req.body;
+  const { userId, age, data, unit } = req.body;
 
   try {
-    const newRecord = new HeartRate({ userId, data, unit });
+    const newRecord = new HeartRate({ userId, age, data, unit });
     await newRecord.save();
     res.status(201).json(newRecord);
   } catch (error) {
