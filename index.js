@@ -15,6 +15,7 @@ const bloodOxygenRoutes = require("./src/routes/bloodOxygenRoutes.js");
 const heartRateRoutes = require("./src/routes/heartRateRoutes.js");
 const bodyTempRoutes = require("./src/routes/bodyTempRoutes.js");
 const ecgRoutes = require("./src/routes/ecgRoutes.js");
+const medicalHistoryRoutes = require("./src/routes/medicalHistoryRoute.js");
 
 dotenv.config();
 const app = express();
@@ -68,6 +69,7 @@ app.use("/api/blood-oxygen", bloodOxygenRoutes);
 app.use("/api/heart-rate", heartRateRoutes);
 app.use("/api/body-temp", bodyTempRoutes);
 app.use("/api/ecg", ecgRoutes);
+app.use("/api/medicalHistory", medicalHistoryRoutes);
 
 app.listen(PORT, () => {
   console.log(`app running on port ${PORT}`);
