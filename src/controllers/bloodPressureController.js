@@ -12,6 +12,15 @@ exports.addBloodPressure = async (req, res) => {
   }
 };
 
+exports.getAllBloodPressureRecords = async (req, res) => {
+  try {
+    const records = await BloodPressure.find(); // Fetch all blood pressure records
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.editBloodPressure = async (req, res) => {
   const { id } = req.params;
   const { systolic, diastolic, unit } = req.body;

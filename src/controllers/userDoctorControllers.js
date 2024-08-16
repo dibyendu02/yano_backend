@@ -10,32 +10,37 @@ exports.signup = async (req, res) => {
     firstName,
     lastName,
     email,
+    password,
     phoneNumber,
     gender,
     dateOfBirth,
     speciality,
-    password,
+    userType, // Role name, optional
   } = req.body;
 
   try {
-    // Validate input
-    if (
-      !firstName ||
-      !lastName ||
-      !email ||
-      !phoneNumber ||
-      !gender ||
-      !dateOfBirth ||
-      !speciality ||
-      !password
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
+    // Validate required input
+    if (!firstName || !lastName || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be provided" });
     }
 
-    // Check if user already exists
-    const existingUser = await UserDoctor.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    // Normalize userType (role name) to lowercase if provided, else default to 'doctor'
+    const normalizedUserType = userType ? userType.toLowerCase() : "doctor";
+
+    // Check if email already exists
+    const existingEmail = await UserDoctor.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Check if phone number already exists
+    if (phoneNumber) {
+      const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
+      if (existingPhoneNumber) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
     }
 
     // Hash the password
@@ -57,11 +62,12 @@ exports.signup = async (req, res) => {
       firstName,
       lastName,
       email,
+      password: hashedPassword,
+      userType: normalizedUserType, // Store the userType in lowercase
       phoneNumber,
       gender,
       dateOfBirth,
       speciality,
-      password: hashedPassword,
     });
 
     // Save the doctor to the database
@@ -72,7 +78,7 @@ exports.signup = async (req, res) => {
       { id: newDoctor._id, email: newDoctor.email },
       process.env.JWT_SECRET,
       {
-        expiresIn: "7d", // Token expires in
+        expiresIn: "7d", // Token expires in 7 days
       }
     );
 
@@ -101,13 +107,13 @@ exports.doctorLogin = async (req, res) => {
     // Check if user exists
     const user = await UserDoctor.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid email" });
     }
 
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ message: "Invalid password" });
     }
 
     // Generate JWT
@@ -139,6 +145,21 @@ exports.findDoctorById = async (req, res) => {
     res.status(200).json({ userData: doctor });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getAllDoctors = async (req, res) => {
+  try {
+    const users = await UserDoctor.find();
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.status(200).json({ userData: users });
+  } catch (error) {
+    console.error("Error retrieving users:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

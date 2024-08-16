@@ -12,6 +12,14 @@ exports.addHeartRate = async (req, res) => {
   }
 };
 
+exports.getAllHeartRates = async (req, res) => {
+  try {
+    const heartRates = await HeartRate.find();
+    res.status(200).json(heartRates);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 exports.editHeartRate = async (req, res) => {
   const { id } = req.params;
   const { data, unit } = req.body;

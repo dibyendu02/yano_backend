@@ -12,6 +12,15 @@ exports.addBloodGlucose = async (req, res) => {
   }
 };
 
+exports.getAllBloodGlucoseRecords = async (req, res) => {
+  try {
+    const records = await BloodGlucose.find();
+    res.status(200).json(records);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 exports.editBloodGlucose = async (req, res) => {
   const { id } = req.params;
   const { data, unit } = req.body;
