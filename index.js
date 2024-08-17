@@ -15,7 +15,15 @@ const bloodOxygenRoutes = require("./src/routes/bloodOxygenRoutes.js");
 const heartRateRoutes = require("./src/routes/heartRateRoutes.js");
 const bodyTempRoutes = require("./src/routes/bodyTempRoutes.js");
 const ecgRoutes = require("./src/routes/ecgRoutes.js");
-const medicalHistoryRoutes = require("./src/routes/medicalHistoryRoute.js");
+const healthConditionsRoutes = require("./src/routes/medicalHistory/healthConditionsRoutes");
+const familyHistoryRoutes = require("./src/routes/medicalHistory/familyHistoryRoutes");
+const allergiesRoutes = require("./src/routes/medicalHistory/allergiesRoutes");
+const medicinesRoutes = require("./src/routes/medicalHistory/medicinesRoutes");
+const surgeriesRoutes = require("./src/routes/medicalHistory/surgeriesRoutes");
+const vaccinesRoutes = require("./src/routes/medicalHistory/vaccinesRoutes");
+const hospitalizationsRoutes = require("./src/routes/medicalHistory/hospitalizationsRoutes");
+const socialHistoryRoutes = require("./src/routes/medicalHistory/socialHistoryRoutes");
+const medicalHistoryRoutes = require("./src/routes/medicalHistoryRoute");
 
 dotenv.config();
 const app = express();
@@ -69,6 +77,14 @@ app.use("/api/blood-oxygen", bloodOxygenRoutes);
 app.use("/api/heart-rate", heartRateRoutes);
 app.use("/api/body-temp", bodyTempRoutes);
 app.use("/api/ecg", ecgRoutes);
+app.use("/api/healthConditions", healthConditionsRoutes);
+app.use("/api/familyHistory", familyHistoryRoutes);
+app.use("/api/allergies", allergiesRoutes);
+app.use("/api/medicines", medicinesRoutes);
+app.use("/api/surgeries", surgeriesRoutes);
+app.use("/api/vaccines", vaccinesRoutes);
+app.use("/api/hospitalizations", hospitalizationsRoutes);
+app.use("/api/socialHistory", socialHistoryRoutes);
 app.use("/api/medicalHistory", medicalHistoryRoutes);
 
 app.listen(PORT, () => {

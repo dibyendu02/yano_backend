@@ -1,27 +1,34 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-export const AllergiesSchema = new Schema({
+const AllergiesSchema = new Schema(
+  {
     nameOfTheAllergy: {
-        type: String,
-        required: true
-    },    
-    triggeredBy : {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    reaction:{
-        type: String,
-        required: true
+    details: {
+      type: String,
+      required: true,
     },
-    howOftenDoesItOccur: {
-        type: String,
-        required: true
+    moreDetails: {
+      type: String,
+      required: true,
+    },
+    treatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserDoctor",
     },
     dateOfFirstDiagnosis: {
-        type: Date,
+      type: Date,
     },
     medicine: {
-        type: String
-    }
-})
+      type: String,
+    },
+    notes: {
+      type: String,
+    },
+  },
+  { _id: true }
+);
+module.exports = AllergiesSchema;

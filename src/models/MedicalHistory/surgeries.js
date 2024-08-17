@@ -1,22 +1,28 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-export const SurgeriesSchema = new Schema({
-    surgeryName: {
-        type: String,
-        required: true
-    },
-    supportDevices: {
-        type: String
-    },
-    dateOfSurgery: {
-        type: Date
-    },
-    physicianInCharge: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "UserDoctor"
-    },
-    additionalNotes: {
-        type: String
-    }
-})
+const SurgeriesSchema = new Schema({
+  surgeryName: {
+    type: String,
+    required: true,
+  },
+  supportDevices: {
+    type: String,
+    required: false,
+  },
+  dateOfSurgery: {
+    type: Date,
+    required: false,
+  },
+  physicianInCharge: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserDoctor",
+    required: false,
+  },
+  additionalNotes: {
+    type: String,
+    required: false,
+  },
+});
+
+module.exports = SurgeriesSchema;
