@@ -1,5 +1,5 @@
 const MedicalHistory = require("../../models/MedicalHistory");
-const HealthConditionsSchema = require("../../models/MedicalHistory/healthConditions");
+const HealthConditionsSchema = require("../../models/MedicalHistories/healthConditions");
 
 // Create a new health condition
 exports.createHealthCondition = async (req, res) => {
