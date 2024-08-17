@@ -41,6 +41,7 @@ const UserDoctorSchema = new Schema(
       canViewCountryReports: { type: Boolean, default: false },
       canExportReports: { type: Boolean, default: false },
     },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

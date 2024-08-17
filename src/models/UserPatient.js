@@ -44,6 +44,7 @@ const UserPatientSchema = new Schema(
     sessionCount: { type: Number, default: 0 }, // New field with default value 0
     country: { type: String }, // New field
     familyLink: [FamilyLinkSchema], // New field
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

@@ -1,10 +1,16 @@
 const BloodPressure = require("../models/BloodPressure");
 
 exports.addBloodPressure = async (req, res) => {
-  const { userId, systolic, diastolic, unit } = req.body;
+  const { userId, age, systolic, diastolic, unit } = req.body;
 
   try {
-    const newRecord = new BloodPressure({ userId, systolic, diastolic, unit });
+    const newRecord = new BloodPressure({
+      userId,
+      age,
+      systolic,
+      diastolic,
+      unit,
+    });
     await newRecord.save();
     res.status(201).json(newRecord);
   } catch (error) {
