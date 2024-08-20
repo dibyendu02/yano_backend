@@ -11,4 +11,4 @@ const FamilyHistorySchema = new Schema({
     type: String,
   },
 });
-module.exports = FamilyHistorySchema;
+module.exports = mongoose.model("FamilyHistory", FamilyHistorySchema);
