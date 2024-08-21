@@ -28,4 +28,4 @@ const HealthConditionsSchema = new Schema({
     required: false, // Additional notes should be optional
   },
 });
-module.exports = HealthConditionsSchema;
+module.exports = mongoose.model("healthConditions", HealthConditionsSchema);

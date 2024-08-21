@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-const HealthConditionsSchema = require("./MedicalHistories/healthConditions");
+const {
+  HealthConditionsSchema,
+} = require("./MedicalHistories/healthConditions");
 const { FamilyHistorySchema } = require("./MedicalHistories/familyHistory");
 const { AllergiesSchema } = require("./MedicalHistories/allergies");
 const { MedicineSchema } = require("./MedicalHistories/medicine");
