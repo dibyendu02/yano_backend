@@ -71,4 +71,4 @@ const SocialHistorySchema = new Schema({
   },
 });
 
-module.exports = SocialHistorySchema;
+module.exports = mongoose.model("socialHistory", SocialHistorySchema);

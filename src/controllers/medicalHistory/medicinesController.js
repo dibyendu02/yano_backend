@@ -45,11 +45,28 @@ exports.getMedicines = async (req, res) => {
 // Get a specific medicine by ID
 exports.getMedicineById = async (req, res) => {
   try {
-    const medicine = await MedicalHistory.findOne(
-      { userId: req.params.userId, "medicines._id": req.params.id },
-      { "medicines.$": 1 }
-    );
-    res.status(200).json(medicine);
+    const medicine = await MedicalHistory.findOne({
+      userId: req.params.userId,
+    });
+
+    if (!medicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    const specificMedicine = medicine.medicines.find((medicine) => {
+      // console.log(medicine._id);
+      if (medicine._id) {
+        const medicineIdStr = medicine._id.toString();
+        const paramIdStr = req.params.id.toString();
+        return medicineIdStr == paramIdStr;
+      }
+      return false;
+    });
+    if (!specificMedicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    res.status(200).json(specificMedicine);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -58,11 +75,39 @@ exports.getMedicineById = async (req, res) => {
 // Update a specific medicine by ID
 exports.updateMedicine = async (req, res) => {
   try {
-    const updatedMedicine = await MedicalHistory.findOneAndUpdate(
-      { userId: req.params.userId, "medicines._id": req.params.id },
-      { $set: { "medicines.$": req.body } },
-      { new: true }
-    );
+    const updatedMedicine = await MedicalHistory.findOne({
+      userId: req.params.userId,
+    });
+
+    if (!updatedMedicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    const specificMedicine = updatedMedicine.medicines.find((medicine) => {
+      if (medicine._id) {
+        const medicineIdStr = medicine._id.toString();
+        const paramIdStr = req.params.id.toString();
+        return medicineIdStr == paramIdStr;
+      }
+      return false;
+    });
+
+    if (!specificMedicine) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    if (req.body.medicineName)
+      specificMedicine.medicineName = req.body.medicineName;
+    if (req.body.formOfMedication)
+      specificMedicine.formOfMedication = req.body.formOfMedication;
+    if (req.body.doses) specificMedicine.doses = req.body.doses;
+    if (req.body.duration) specificMedicine.duration = req.body.duration;
+    if (req.body.additionalInformation)
+      specificMedicine.additionalInformation = req.body.additionalInformation;
+
+    updatedMedicine.markModified("medicines");
+    await updatedMedicine.save();
+
     res.status(200).json(updatedMedicine);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -72,12 +117,30 @@ exports.updateMedicine = async (req, res) => {
 // Delete a specific medicine by ID
 exports.deleteMedicine = async (req, res) => {
   try {
-    const updatedHistory = await MedicalHistory.findOneAndUpdate(
-      { userId: req.params.userId },
-      { $pull: { medicines: { _id: req.params.id } } },
-      { new: true }
-    );
-    res.status(200).json(updatedHistory);
+    const medicalHistory = await MedicalHistory.findOne({
+      userId: req.params.userId,
+    });
+
+    if (!medicalHistory) {
+      return res.status(404).json({ message: "Medical history not found" });
+    }
+
+    const medicineIndex = medicalHistory.medicines.findIndex((medicine) => {
+      if (medicine._id) {
+        return medicine._id.toString() === req.params.id;
+      }
+      return false;
+    });
+
+    if (medicineIndex === -1) {
+      return res.status(404).json({ message: "Medicine not found" });
+    }
+
+    medicalHistory.medicines.splice(medicineIndex, 1);
+
+    await medicalHistory.save();
+
+    res.status(200).json(medicalHistory);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

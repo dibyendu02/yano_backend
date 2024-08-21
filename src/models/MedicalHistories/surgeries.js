@@ -25,4 +25,4 @@ const SurgeriesSchema = new Schema({
   },
 });
 
-module.exports = SurgeriesSchema;
+module.exports = mongoose.model("surgeries", SurgeriesSchema);
