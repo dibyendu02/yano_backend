@@ -23,4 +23,4 @@ const HospitalizationSchema = new Schema({
   },
 });
 
-module.exports = HospitalizationSchema;
+module.exports = mongoose.model("Hospitalization", HospitalizationSchema);
