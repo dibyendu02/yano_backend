@@ -1,13 +1,30 @@
+const medicine = require("../../models/MedicalHistories/medicine");
 const MedicalHistory = require("../../models/MedicalHistory");
+
 // Create a new medicine
 exports.createMedicine = async (req, res) => {
   try {
-    const newMedicine = await MedicalHistory.findOneAndUpdate(
+    // Create a new medicine document
+    const newMedicine = await medicine.create({
+      medicineName: req.body.medicineName,
+      formOfMedication: req.body.formOfMedication,
+      doses: req.body.doses,
+      duration: req.body.duration,
+      additionalInformation: req.body.additionalInformation,
+    });
+
+    // Update the MedicalHistory document by pushing the newly created medicine
+    const updatedMedicalHistory = await MedicalHistory.findOneAndUpdate(
       { userId: req.body.userId },
-      { $push: { medicines: req.body } },
+      { $push: { medicines: newMedicine } },
       { new: true }
     );
-    res.status(201).json(newMedicine);
+
+    if (!updatedMedicalHistory) {
+      return res.status(404).json({ message: "Medical history not found" });
+    }
+
+    res.status(201).json(updatedMedicalHistory);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
