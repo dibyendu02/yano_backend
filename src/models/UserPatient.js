@@ -49,4 +49,4 @@ const UserPatientSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("userpatient", UserPatientSchema);
+module.exports = mongoose.model("UserPatient", UserPatientSchema);
