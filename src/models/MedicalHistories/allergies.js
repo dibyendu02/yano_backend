@@ -31,4 +31,4 @@ const AllergiesSchema = new Schema(
   },
   { _id: true }
 );
-module.exports = AllergiesSchema;
+module.exports = mongoose.model("Allergies", AllergiesSchema);

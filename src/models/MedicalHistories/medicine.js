@@ -88,4 +88,4 @@ const MedicineSchema = new Schema({
     required: false,
   },
 });
-module.exports = MedicineSchema;
+module.exports = mongoose.model("medicine", MedicineSchema);

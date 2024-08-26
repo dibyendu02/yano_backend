@@ -24,6 +24,8 @@ const vaccinesRoutes = require("./src/routes/medicalHistory/vaccinesRoutes");
 const hospitalizationsRoutes = require("./src/routes/medicalHistory/hospitalizationsRoutes");
 const socialHistoryRoutes = require("./src/routes/medicalHistory/socialHistoryRoutes");
 const medicalHistoryRoutes = require("./src/routes/medicalHistoryRoute");
+const changePasswordRoutes = require("./src/routes/changePasswordRoutes");
+const patientAddFamilyMemberRoutes = require("./src/routes/patientAddFamilyMemberRoutes");
 
 dotenv.config();
 const app = express();
@@ -86,6 +88,8 @@ app.use("/api/vaccines", vaccinesRoutes);
 app.use("/api/hospitalizations", hospitalizationsRoutes);
 app.use("/api/socialHistory", socialHistoryRoutes);
 app.use("/api/medicalHistory", medicalHistoryRoutes);
+app.use("/api/changePassword", changePasswordRoutes);
+app.use("/api/patientAddFamilyMember", patientAddFamilyMemberRoutes);
 
 app.listen(PORT, () => {
   console.log(`app running on port ${PORT}`);
