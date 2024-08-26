@@ -21,17 +21,32 @@ exports.patientSignup = async (req, res) => {
   } = req.body;
 
   // Check for missing required fields
-  if (
-    !firstName ||
-    !lastName ||
-    !email ||
-    !gender ||
-    !dateOfBirth ||
-    !password
-  ) {
-    return res
-      .status(400)
-      .json({ message: "All required fields must be provided" });
+  // if (
+  //   !firstName ||
+  //   !lastName ||
+  //   !email ||
+  //   !gender ||
+  //   !dateOfBirth ||
+  //   !password
+  // ) {
+  //   return res
+  //     .status(400)
+  //     .json({ message: "All required fields must be provided" });
+  // }
+
+  const missingFields = [];
+
+  if (!firstName) missingFields.push("firstName");
+  if (!lastName) missingFields.push("lastName");
+  if (!email) missingFields.push("email");
+  if (!gender) missingFields.push("gender");
+  if (!dateOfBirth) missingFields.push("dateOfBirth");
+  if (!password) missingFields.push("password");
+
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      message: "The following fields are missing: " + missingFields.join(", "),
+    });
   }
 
   try {
