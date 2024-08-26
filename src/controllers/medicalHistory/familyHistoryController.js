@@ -4,6 +4,7 @@ const MedicalHistory = require("../../models/MedicalHistory");
 // Create a new family history entry
 exports.createFamilyHistory = async (req, res) => {
   try {
+    console.log(req.body);
     // Create a new family history document
     const newFamilyHistory = await familyHistory.create({
       relationShip: req.body.relationship,
@@ -15,6 +16,7 @@ exports.createFamilyHistory = async (req, res) => {
       { $push: { familyHistory: newFamilyHistory } },
       { new: true }
     );
+    console.log(newEntry);
 
     res.status(201).json(newEntry);
   } catch (error) {
