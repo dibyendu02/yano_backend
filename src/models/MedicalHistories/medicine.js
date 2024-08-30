@@ -60,8 +60,9 @@ const AdditionalInformationSchema = new Schema({
     required: true,
   },
   prescribedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "UserDoctor",
+    // type: mongoose.Schema.Types.ObjectId,
+    // ref: "UserDoctor",
+    type: String,
     required: false,
   },
   sideEffects: {
