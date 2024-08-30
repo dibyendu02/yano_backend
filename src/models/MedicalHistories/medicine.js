@@ -10,6 +10,10 @@ const FormOfMedicationSchema = new Schema({
     type: String,
     required: false,
   },
+  medicineStrengthUnit: {
+    type: String,
+    required: false,
+  },
   ingestionMethod: {
     type: String,
     required: false,
@@ -72,11 +76,11 @@ const MedicineSchema = new Schema({
     required: true,
   },
   formOfMedication: {
-    type: [FormOfMedicationSchema],
+    type: FormOfMedicationSchema,
     required: true,
   },
   doses: {
-    type: [DosesSchema],
+    type: DosesSchema,
     required: true,
   },
   duration: {
