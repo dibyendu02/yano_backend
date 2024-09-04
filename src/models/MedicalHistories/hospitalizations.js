@@ -18,8 +18,7 @@ const HospitalizationSchema = new Schema({
     type: Date,
   },
   nameOfAttendingPhysician: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "UserDoctor",
+    type: String,
   },
 });
 

@@ -6,13 +6,13 @@ const VaccineSchema = new Schema({
     type: String,
     required: true,
   },
-  shootingDate: {
+  shotDate: {
     type: Date,
     required: true,
   },
   vaccineName: {
     type: String,
-    required: true,
+    required: false,
   },
   vaccineDetails: {
     type: String,
