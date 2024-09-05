@@ -14,9 +14,8 @@ const HealthConditionsSchema = new Schema({
     type: String,
     required: true,
   },
-  TreatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "UserDoctor",
+  treatedBy: {
+    type: String,
     required: false, // Not all conditions might be treated by a doctor recorded in the system
   },
   medicine: {
