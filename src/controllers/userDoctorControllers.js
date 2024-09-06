@@ -278,7 +278,7 @@ exports.createPatient = async (req, res) => {
       return res.status(400).json({ message: "Failed to create patient" });
     }
 
-    patients.markModified("patients");
+    doctor.markModified("patients");
 
     await doctor.save();
 
