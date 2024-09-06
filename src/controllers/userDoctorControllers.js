@@ -222,6 +222,8 @@ exports.createPatient = async (req, res) => {
     const { firstName, lastName, email, phoneNumber, gender, dateOfBirth } =
       req.body;
 
+    console.log(firstName, lastName, email, phoneNumber, gender, dateOfBirth);
+
     const missingFields = [];
 
     if (!firstName) missingFields.push("firstName");
