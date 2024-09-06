@@ -1,15 +1,15 @@
-const allergies = require("../../models/MedicalHistories/allergies");
+const Allergies = require("../../models/MedicalHistories/allergies");
 const MedicalHistory = require("../../models/MedicalHistory");
 
 // Create a new allergy
 exports.createAllergy = async (req, res) => {
   try {
     // Create the allergy entry
-    const allergy = await allergies.create({
+    const allergy = await Allergies.create({
       nameOfTheAllergy: req.body.nameOfTheAllergy,
-      details: req.body.details,
-      moreDetails: req.body.moreDetails,
-      treatedBy: req.body.treatedBy,
+      triggeredBy: req.body.triggeredBy,
+      reaction: req.body.reaction,
+      howOften: req.body.howOften,
       dateOfFirstDiagnosis: req.body.dateOfFirstDiagnosis,
       medicine: req.body.medicine,
       notes: req.body.notes,
@@ -25,6 +25,7 @@ exports.createAllergy = async (req, res) => {
     // Respond with the updated medical history
     res.status(201).json(newAllergy);
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -35,6 +36,7 @@ exports.getAllergies = async (req, res) => {
     const allergies = await MedicalHistory.findOne({
       userId: req.params.userId,
     }).select("allergies");
+
     res.status(200).json(allergies);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -51,21 +53,12 @@ exports.getAllergyById = async (req, res) => {
     if (!medicalHistory) {
       return res.status(404).json({ message: "Medical history not found" });
     }
-    const allergy = medicalHistory.allergies.find((allergy) => {
-      if (allergy._id) {
-        const allergyIdStr = allergy._id.toString();
-        const paramIdStr = req.params.id.toString();
-        return allergyIdStr === paramIdStr;
-      }
-      return false;
-    });
 
-    if (!allergy) {
-      res.status(404).json({ message: "Allergy not found" });
-    }
+    const allergy = medicalHistory.allergies.id(req.params.id);
     if (!allergy) {
       return res.status(404).json({ message: "Allergy not found" });
     }
+
     res.status(200).json(allergy);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -83,24 +76,17 @@ exports.updateAllergy = async (req, res) => {
       return res.status(404).json({ message: "Medical history not found" });
     }
 
-    const allergy = medicalHistory.allergies.find((allergy) => {
-      if (allergy._id) {
-        const allergyIdStr = allergy._id.toString();
-        const paramIdStr = req.params.id.toString();
-        return allergyIdStr === paramIdStr;
-      }
-      return false;
-    });
-
+    const allergy = medicalHistory.allergies.id(req.params.id);
     if (!allergy) {
       return res.status(404).json({ message: "Allergy not found" });
     }
 
+    // Update the fields if they are provided in the request
     if (req.body.nameOfTheAllergy)
       allergy.nameOfTheAllergy = req.body.nameOfTheAllergy;
-    if (req.body.details) allergy.details = req.body.details;
-    if (req.body.moreDetails) allergy.moreDetails = req.body.moreDetails;
-    if (req.body.treatedBy) allergy.treatedBy = req.body.treatedBy;
+    if (req.body.triggeredBy) allergy.triggeredBy = req.body.triggeredBy;
+    if (req.body.reaction) allergy.reaction = req.body.reaction;
+    if (req.body.howOften) allergy.howOften = req.body.howOften;
     if (req.body.dateOfFirstDiagnosis)
       allergy.dateOfFirstDiagnosis = req.body.dateOfFirstDiagnosis;
     if (req.body.medicine) allergy.medicine = req.body.medicine;
@@ -127,12 +113,9 @@ exports.deleteAllergy = async (req, res) => {
       return res.status(404).json({ message: "Medical history not found" });
     }
 
-    const allergyIndex = medicalHistory.allergies.findIndex((allergy) => {
-      if (allergy._id) {
-        return allergy._id.toString() === req.params.id;
-      }
-      return false;
-    });
+    const allergyIndex = medicalHistory.allergies.findIndex(
+      (allergy) => allergy._id.toString() === req.params.id
+    );
 
     if (allergyIndex === -1) {
       return res.status(404).json({ message: "Allergy not found" });
@@ -142,7 +125,7 @@ exports.deleteAllergy = async (req, res) => {
 
     await medicalHistory.save();
 
-    res.status(200).json(medicalHistory);
+    res.status(200).json({ message: "Allergy deleted successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

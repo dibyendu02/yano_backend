@@ -6,7 +6,7 @@ exports.createVaccine = async (req, res) => {
   try {
     const newVaccine = await vaccine.create({
       vaccineFor: req.body.vaccineFor,
-      shootingDate: req.body.shootingDate,
+      shotDate: req.body.shotDate,
       vaccineName: req.body.vaccineName,
       vaccineDetails: req.body.vaccineDetails,
       lotNumber: req.body.lotNumber,
@@ -95,7 +95,7 @@ exports.updateVaccine = async (req, res) => {
 
     // Update only the fields provided in the request body
     if (req.body.vaccineFor) vaccine.vaccineFor = req.body.vaccineFor;
-    if (req.body.shootingDate) vaccine.shootingDate = req.body.shootingDate;
+    if (req.body.shotDate) vaccine.shotDate = req.body.shotDate;
     if (req.body.vaccineName) vaccine.vaccineName = req.body.vaccineName;
     if (req.body.vaccineDetails)
       vaccine.vaccineDetails = req.body.vaccineDetails;

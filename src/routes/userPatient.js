@@ -23,13 +23,13 @@ router.post("/signup", singleUpload, patientSignup);
 router.get("/:id", findPatientById);
 
 // update patient by ID route
-router.put("/:id", updatePatient);
+router.put("/:id", singleUpload, updatePatient);
 
 //get all patients
 router.get("/", getAllPatients);
 
 // Route to create a new family member account
-router.post("/family", createFamilyMember);
+router.post("/family", singleUpload, createFamilyMember);
 
 // Route to link the new family member to an existing patient
 router.put("/:patientId/family/:familyMemberId", linkFamilyMember);
