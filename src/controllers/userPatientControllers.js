@@ -195,25 +195,43 @@ exports.updatePatient = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  console.log(req.body);
+  console.log("Received file:", req.file); // This should log the file buffer and metadata
+  console.log("Update data:", updateData); // Log form data
 
   try {
+    let userImg = {};
+    if (req.file) {
+      const fileUri = `data:${
+        req.file.mimetype
+      };base64,${req.file.buffer.toString("base64")}`;
+      const result = await cloudinary.uploader.upload(fileUri);
+
+      console.log("img uri ", result);
+
+      userImg.public_id = result.public_id;
+      userImg.secure_url = result.secure_url;
+    }
+
+    // Merge the uploaded image (if any) into the updateData object
+    if (userImg.secure_url) {
+      updateData.userImg = userImg;
+    }
+
     // Find the patient by ID and update with the data provided in the request body
     const patient = await UserPatient.findOneAndUpdate(
       { _id: id },
       { $set: updateData },
-      { new: true } // Return the updated document and run validators
+      { new: true }
     );
-
-    // console.log(patient);
 
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Patient updated successfully", userData: patient });
+    res.status(200).json({
+      message: "Patient updated successfully",
+      userData: patient,
+    });
   } catch (error) {
     console.error("Error updating patient:", error);
     res.status(500).json({ message: "Server error" });
