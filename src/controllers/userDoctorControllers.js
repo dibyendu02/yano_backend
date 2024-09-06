@@ -245,12 +245,12 @@ exports.createPatient = async (req, res) => {
     }
 
     // Check if phone number already exists
-    if (phoneNumber) {
-      const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
-      if (existingPhoneNumber) {
-        return res.status(400).json({ message: "Phone number already exists" });
-      }
-    }
+    // if (phoneNumber) {
+    //   const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
+    //   if (existingPhoneNumber) {
+    //     return res.status(400).json({ message: "Phone number already exists" });
+    //   }
+    // }
 
     let userImg = {};
     if (req.file) {
@@ -266,7 +266,7 @@ exports.createPatient = async (req, res) => {
       firstName,
       lastName,
       email,
-      phoneNumber,
+      // phoneNumber,
       gender,
       dateOfBirth,
     });
