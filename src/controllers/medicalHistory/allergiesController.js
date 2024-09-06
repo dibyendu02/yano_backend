@@ -7,12 +7,12 @@ exports.createAllergy = async (req, res) => {
     // Create the allergy entry
     const allergy = await allergies.create({
       nameOfTheAllergy: req.body.nameOfTheAllergy,
-      details: req.body.details,
-      moreDetails: req.body.moreDetails,
-      treatedBy: req.body.treatedBy,
+      triggeredBy: req.body.triggeredBy,
+      reaction: req.body.reaction,
+      howOftenDoesItOccur: req.body.howOftenDoesItOccur,
       dateOfFirstDiagnosis: req.body.dateOfFirstDiagnosis,
       medicine: req.body.medicine,
-      notes: req.body.notes,
+      additionalNotes: req.body.additionalNotes,
     });
 
     // Update the user's medical history by adding the newly created allergy
@@ -98,13 +98,14 @@ exports.updateAllergy = async (req, res) => {
 
     if (req.body.nameOfTheAllergy)
       allergy.nameOfTheAllergy = req.body.nameOfTheAllergy;
-    if (req.body.details) allergy.details = req.body.details;
-    if (req.body.moreDetails) allergy.moreDetails = req.body.moreDetails;
-    if (req.body.treatedBy) allergy.treatedBy = req.body.treatedBy;
+    if (req.body.triggeredBy) allergy.triggeredBy = req.body.triggeredBy;
+    if (req.body.reaction) allergy.reaction = req.body.reaction;
+    if (req.body.howOftenDoesItOccur)
+      allergy.howOftenDoesItOccur = req.body.howOftenDoesItOccur;
     if (req.body.dateOfFirstDiagnosis)
       allergy.dateOfFirstDiagnosis = req.body.dateOfFirstDiagnosis;
     if (req.body.medicine) allergy.medicine = req.body.medicine;
-    if (req.body.notes) allergy.notes = req.body.notes;
+    if (req.body.additionalNotes) allergy.notes = req.body.additionalNotes;
 
     medicalHistory.markModified("allergies");
 

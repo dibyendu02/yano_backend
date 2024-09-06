@@ -7,17 +7,17 @@ const AllergiesSchema = new Schema(
       type: String,
       required: true,
     },
-    details: {
+    triggeredBy: {
       type: String,
       required: true,
     },
-    moreDetails: {
+    reaction: {
       type: String,
       required: true,
     },
-    treatedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "UserDoctor",
+    howOftenDoesItOccur: {
+      type: String,
+      required: true,
     },
     dateOfFirstDiagnosis: {
       type: Date,
@@ -25,7 +25,7 @@ const AllergiesSchema = new Schema(
     medicine: {
       type: String,
     },
-    notes: {
+    additionalNotes: {
       type: String,
     },
   },
