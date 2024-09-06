@@ -122,6 +122,7 @@ exports.updateHealthCondition = async (req, res) => {
       condition.additionalNotes = req.body.additionalNotes;
     }
 
+    medicalHistory.markModified("healthConditions");
     await medicalHistory.save();
     res.status(200).json(medicalHistory);
   } catch (error) {

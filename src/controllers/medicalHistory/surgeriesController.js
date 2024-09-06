@@ -68,7 +68,6 @@ exports.getSurgeryById = async (req, res) => {
   }
 };
 
-// Update a specific surgery by ID
 exports.updateSurgery = async (req, res) => {
   try {
     const medicalHistory = await MedicalHistory.findOne({
@@ -93,10 +92,14 @@ exports.updateSurgery = async (req, res) => {
     }
 
     // Update only the fields provided in the request body
-    if (req.body.nameOfSurgery) surgery.nameOfSurgery = req.body.nameOfSurgery;
+    if (req.body.surgeryName) surgery.surgeryName = req.body.surgeryName;
+    if (req.body.supportDevices)
+      surgery.supportDevices = req.body.supportDevices;
     if (req.body.dateOfSurgery) surgery.dateOfSurgery = req.body.dateOfSurgery;
-    if (req.body.surgeon) surgery.surgeon = req.body.surgeon;
-    if (req.body.notes) surgery.notes = req.body.notes;
+    if (req.body.physicianInCharge)
+      surgery.physicianInCharge = req.body.physicianInCharge;
+    if (req.body.additionalNotes)
+      surgery.additionalNotes = req.body.additionalNotes;
 
     medicalHistory.markModified("surgeries");
 

@@ -15,8 +15,7 @@ const SurgeriesSchema = new Schema({
     required: false,
   },
   physicianInCharge: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "UserDoctor",
+    type: String,
     required: false,
   },
   additionalNotes: {
