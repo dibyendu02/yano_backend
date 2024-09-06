@@ -219,19 +219,8 @@ exports.createPatient = async (req, res) => {
   console.log("Update data:", req.body);
   try {
     const { id } = req.params;
-    const {
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      gender,
-      dateOfBirth,
-      height,
-      weight,
-      bloodType,
-      country,
-      familyLink,
-    } = req.body;
+    const { firstName, lastName, email, phoneNumber, gender, dateOfBirth } =
+      req.body;
 
     const missingFields = [];
 
@@ -280,18 +269,12 @@ exports.createPatient = async (req, res) => {
       phoneNumber,
       gender,
       dateOfBirth,
-      height,
-      weight,
-      bloodType,
-      country,
-      familyLink,
-      sessionCount: 0, // Default value
-      isEmailVerified: false,
-      isPhoneVerified: false,
-      devices: [],
     });
 
-    doctor.patients.push(newPatient);
+    if (!newPatient) {
+      console.log("Failed to create patient");
+      return res.status(400).json({ message: "Failed to create patient" });
+    }
 
     patients.markModified("patients");
 
