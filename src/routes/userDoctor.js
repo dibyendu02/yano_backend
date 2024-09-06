@@ -6,6 +6,7 @@ const {
   findDoctorById,
   getAllDoctors,
   updateDoctor,
+  createPatient,
 } = require("../controllers/userDoctorControllers");
 const { singleUpload } = require("../middlewares/multer");
 
@@ -19,5 +20,8 @@ router.get("/:id", findDoctorById);
 
 // get all doctors
 router.get("/", getAllDoctors);
+
+// post create doctor
+router.post("/create-patient/:id", singleUpload, createPatient);
 
 module.exports = router;
