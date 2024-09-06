@@ -215,6 +215,8 @@ exports.updateDoctor = async (req, res) => {
 };
 
 exports.createPatient = async (req, res) => {
+  console.log("Received file:", req.file);
+  console.log("Update data:", req.body);
   try {
     const { id } = req.params;
     const {
@@ -270,7 +272,7 @@ exports.createPatient = async (req, res) => {
     }
 
     // Create new patient
-    const newPatient = new UserPatient({
+    const newPatient = await UserPatient.create({
       userImg,
       firstName,
       lastName,
@@ -289,10 +291,9 @@ exports.createPatient = async (req, res) => {
       devices: [],
     });
 
-    // Save the patient to the database
-    await newPatient.save();
-
     doctor.patients.push(newPatient);
+
+    patients.markModified("patients");
 
     await doctor.save();
 
