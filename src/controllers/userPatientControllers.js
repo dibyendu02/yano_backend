@@ -57,12 +57,12 @@ exports.patientSignup = async (req, res) => {
     }
 
     // Check if phone number already exists
-    if (phoneNumber) {
-      const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
-      if (existingPhoneNumber) {
-        return res.status(400).json({ message: "Phone number already exists" });
-      }
-    }
+    // if (phoneNumber) {
+    //   const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
+    //   if (existingPhoneNumber) {
+    //     return res.status(400).json({ message: "Phone number already exists" });
+    //   }
+    // }
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
@@ -241,12 +241,33 @@ exports.updatePatient = async (req, res) => {
 //create family member
 
 exports.createFamilyMember = async (req, res) => {
-  const { firstName, lastName, email, dateOfBirth, gender } = req.body;
-
-  console.log(req.body);
+  const {
+    firstName,
+    lastName,
+    email,
+    dateOfBirth,
+    gender,
+    relation,
+    patientId,
+  } = req.body;
 
   try {
-    // Create a new patient account
+    // Check if email already exists
+    const existingEmail = await UserPatient.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Upload image to Cloudinary if provided
+    let userImg = {};
+    if (req.file) {
+      const fileUri = getDataUri(req.file).content;
+      const result = await cloudinary.uploader.upload(fileUri);
+      userImg.public_id = result.public_id;
+      userImg.secure_url = result.secure_url;
+    }
+
+    // Create a new patient account for the family member
     const newPatient = new UserPatient({
       firstName,
       lastName,
@@ -254,13 +275,31 @@ exports.createFamilyMember = async (req, res) => {
       dateOfBirth,
       gender,
       userType: "patient", // Ensuring the userType is "patient"
+      userImg, // Add the image if uploaded
     });
 
     const savedPatient = await newPatient.save();
 
+    // Link the newly created family member to the existing patient
+    const existingPatient = await UserPatient.findById(patientId);
+    if (!existingPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Add the family member link with full name and userImg
+    existingPatient.familyLink.push({
+      relation,
+      name: `${savedPatient.firstName} ${savedPatient.lastName}`, // Full name
+      userImg: savedPatient.userImg, // User image
+      userId: savedPatient._id,
+    });
+
+    await existingPatient.save();
+
     res.status(201).json({
-      message: "Family member created successfully",
+      message: "Family member created and linked successfully",
       familyMember: savedPatient,
+      updatedPatient: existingPatient,
     });
   } catch (error) {
     console.error("Error creating family member:", error);
@@ -296,6 +335,34 @@ exports.linkFamilyMember = async (req, res) => {
     });
   } catch (error) {
     console.error("Error linking family member:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//get family link data
+
+exports.getFamilyLinkData = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Find the user by userId and populate the familyLink field
+    const patient = await UserPatient.findById(userId);
+    // .populate(
+    //   "familyLink.userId",
+    //   "firstName lastName userImg email dateOfBirth gender"
+    // );
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Return the familyLink data
+    res.status(200).json({
+      message: "Family link data retrieved successfully",
+      familyLink: patient.familyLink,
+    });
+  } catch (error) {
+    console.error("Error retrieving family link data:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
