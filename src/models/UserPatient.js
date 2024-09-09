@@ -11,6 +11,11 @@ const DeviceSchema = new Schema({
 });
 
 const FamilyLinkSchema = new Schema({
+  name: { type: String },
+  userImg: {
+    public_id: { type: String },
+    secure_url: { type: String },
+  },
   relation: { type: String, required: true },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

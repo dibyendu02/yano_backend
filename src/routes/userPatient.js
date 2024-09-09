@@ -8,6 +8,7 @@ const {
   updatePatient,
   createFamilyMember,
   linkFamilyMember,
+  getFamilyLinkData,
 } = require("../controllers/userPatientControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
@@ -29,9 +30,11 @@ router.put("/:id", singleUpload, updatePatient);
 router.get("/", getAllPatients);
 
 // Route to create a new family member account
-router.post("/family", singleUpload, createFamilyMember);
+router.post("/addfamilylink", singleUpload, verifyToken, createFamilyMember);
 
 // Route to link the new family member to an existing patient
 router.put("/:patientId/family/:familyMemberId", linkFamilyMember);
+
+router.get("/:userId/getfamilylink", verifyToken, getFamilyLinkData);
 
 module.exports = router;
