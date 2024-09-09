@@ -4,6 +4,8 @@ const healthConditions = require("../../models/MedicalHistories/healthConditions
 // Create a new health condition
 exports.createHealthCondition = async (req, res) => {
   try {
+    console.log(req.body);
+
     const newHealthCondition = await healthConditions.create({
       nameOfTheHealthCondition: req.body.nameOfTheHealthCondition,
       dateOfDiagnosis: req.body.dateOfDiagnosis,
@@ -12,6 +14,11 @@ exports.createHealthCondition = async (req, res) => {
       medicine: req.body.medicine,
       additionalNotes: req.body.additionalNotes,
     });
+
+    if (!newHealthCondition) {
+      console.log("Health condition not created");
+      return res.status(404).json({ message: "Health condition not created" });
+    }
 
     const newCondition = await MedicalHistory.findOneAndUpdate(
       { userId: req.body.userId },

@@ -37,7 +37,7 @@ const UserPatientSchema = new Schema(
     dateOfBirth: { type: Date, required: true },
     gender: { type: String, required: true },
     password: { type: String },
-    phoneNumber: { type: String },
+    phoneNumber: { type: String }, // Optional, not required
     doctor: { type: mongoose.Schema.Types.ObjectId, ref: "UserDoctor" },
     isEmailVerified: { type: Boolean, default: false },
     isPhoneVerified: { type: Boolean, default: false },

@@ -15,8 +15,9 @@ const AllergiesSchema = new Schema(
       type: String,
       required: true,
     },
-    howOften: {
+    howOftenDoesItOccur: {
       type: String,
+      required: true,
     },
     dateOfFirstDiagnosis: {
       type: Date,
@@ -24,7 +25,7 @@ const AllergiesSchema = new Schema(
     medicine: {
       type: String,
     },
-    notes: {
+    additionalNotes: {
       type: String,
     },
   },
