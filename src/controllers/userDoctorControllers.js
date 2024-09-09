@@ -291,3 +291,50 @@ exports.createPatient = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.findPatientByemail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const patient = await UserPatient.findOne({ email });
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.status(200).json({ userData: patient });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.addPatientInTheList = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { id } = req.body;
+    const doctor = await UserDoctor.findById(doctorId);
+
+    const patient = await UserPatient.findById(id);
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    if (doctor.patients.includes(patient._id)) {
+      console.log("Patient already added");
+      return res.status(405).json({ message: "Patient already added" });
+    }
+    doctor.patients.push(patient._id);
+
+    doctor.markModified("patients");
+    await doctor.save();
+    res.status(200).json({ message: "Patient added successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
