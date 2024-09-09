@@ -8,7 +8,7 @@ exports.createHealthCondition = async (req, res) => {
       nameOfTheHealthCondition: req.body.nameOfTheHealthCondition,
       dateOfDiagnosis: req.body.dateOfDiagnosis,
       status: req.body.status,
-      TreatedBy: req.body.TreatedBy,
+      treatedBy: req.body.treatedBy,
       medicine: req.body.medicine,
       additionalNotes: req.body.additionalNotes,
     });
@@ -105,8 +105,8 @@ exports.updateHealthCondition = async (req, res) => {
     if (req.body.status !== undefined) {
       condition.status = req.body.status;
     }
-    if (req.body.TreatedBy !== undefined) {
-      condition.treatedBy = req.body.TreatedBy; // Note: Ensure consistent camelCase
+    if (req.body.treatedBy !== undefined) {
+      condition.treatedBy = req.body.treatedBy; // Note: Ensure consistent camelCase
     }
     if (req.body.medicine !== undefined) {
       condition.medicine = req.body.medicine;
