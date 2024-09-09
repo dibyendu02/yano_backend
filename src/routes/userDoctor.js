@@ -7,6 +7,8 @@ const {
   getAllDoctors,
   updateDoctor,
   createPatient,
+  findPatientByemail,
+  addPatientInTheList,
 } = require("../controllers/userDoctorControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
@@ -24,5 +26,9 @@ router.get("/", getAllDoctors);
 
 // post create doctor
 router.post("/create-patient/:id", verifyToken, singleUpload, createPatient);
+
+router.post("/find-patient-by-email", verifyToken, findPatientByemail);
+
+router.put("/add-patient-in-list/:doctorId", verifyToken, addPatientInTheList);
 
 module.exports = router;
