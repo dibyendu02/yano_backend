@@ -4,6 +4,7 @@ const cloudinary = require("cloudinary").v2;
 const UserDoctor = require("../models/UserDoctor");
 const { singleUpload } = require("../middlewares/multer");
 const { getDataUri } = require("../utils/feature"); // Adjust the path based on your project structure
+const UserPatient = require("../models/UserPatient");
 
 exports.signup = async (req, res) => {
   const {
@@ -209,6 +210,84 @@ exports.updateDoctor = async (req, res) => {
     });
   } catch (error) {
     console.error("Update error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.createPatient = async (req, res) => {
+  console.log("Received file:", req.file);
+  console.log("Update data:", req.body);
+  try {
+    const { id } = req.params;
+    const { firstName, lastName, email, phoneNumber, gender, dateOfBirth } =
+      req.body;
+
+    console.log(firstName, lastName, email, gender, dateOfBirth);
+
+    const missingFields = [];
+
+    if (!firstName) missingFields.push("firstName");
+    if (!lastName) missingFields.push("lastName");
+    if (!email) missingFields.push("email");
+    if (!gender) missingFields.push("gender");
+    if (!dateOfBirth) missingFields.push("dateOfBirth");
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message:
+          "The following fields are missing: " + missingFields.join(", "),
+      });
+    }
+
+    const doctor = await UserDoctor.findById(id);
+
+    const existingEmail = await UserPatient.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Check if phone number already exists
+    // if (phoneNumber) {
+    //   const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
+    //   if (existingPhoneNumber) {
+    //     return res.status(400).json({ message: "Phone number already exists" });
+    //   }
+    // }
+
+    let userImg = {};
+    if (req.file) {
+      const fileUri = getDataUri(req.file).content;
+      const result = await cloudinary.uploader.upload(fileUri);
+      userImg.public_id = result.public_id;
+      userImg.secure_url = result.secure_url;
+    }
+
+    // Create new patient
+    const newPatient = await UserPatient.create({
+      userImg,
+      firstName,
+      lastName,
+      email,
+      // phoneNumber,
+      gender,
+      dateOfBirth,
+    });
+
+    if (!newPatient) {
+      console.log("Failed to create patient");
+      return res.status(400).json({ message: "Failed to create patient" });
+    }
+
+    doctor.markModified("patients");
+
+    await doctor.save();
+
+    res.status(201).json({
+      message: "Patient created successfully",
+      userData: newPatient,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };
