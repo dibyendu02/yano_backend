@@ -15,9 +15,12 @@ const { verifyToken } = require("../middlewares/VerifyToken");
 
 // Signup route
 router.post("/signup", singleUpload, signup);
+
 //update
 router.put("/:id", singleUpload, updateDoctor);
+
 router.post("/login", doctorLogin);
+
 // Find doctor by ID route
 router.get("/:id", findDoctorById);
 
