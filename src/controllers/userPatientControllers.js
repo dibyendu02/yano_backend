@@ -195,8 +195,8 @@ exports.updatePatient = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  console.log("Received file:", req.file); // This should log the file buffer and metadata
-  console.log("Update data:", updateData); // Log form data
+  // console.log("Received file:", req.file); // This should log the file buffer and metadata
+  // console.log("Update data:", updateData); // Log form data
 
   try {
     let userImg = {};

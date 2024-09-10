@@ -37,19 +37,20 @@ const UserPatientSchema = new Schema(
     dateOfBirth: { type: Date, required: true },
     gender: { type: String, required: true },
     password: { type: String },
-    phoneNumber: { type: String }, // Optional, not required
+    phoneNumber: { type: String },
     doctor: { type: mongoose.Schema.Types.ObjectId, ref: "UserDoctor" },
     isEmailVerified: { type: Boolean, default: false },
     isPhoneVerified: { type: Boolean, default: false },
-    height: { type: Number }, // in cm
-    weight: { type: Number }, // in kg
+    height: { type: Number },
+    weight: { type: Number },
     bloodType: { type: String },
     devices: [DeviceSchema],
-
-    sessionCount: { type: Number, default: 0 }, // New field with default value 0
-    country: { type: String }, // New field
-    familyLink: [FamilyLinkSchema], // New field
+    sessionCount: { type: Number, default: 0 },
+    country: { type: String },
+    familyLink: [FamilyLinkSchema],
     isActive: { type: Boolean, default: true },
+    emergencyContactName: { type: String },
+    emergencyContactPhone: { type: String },
   },
   { timestamps: true }
 );

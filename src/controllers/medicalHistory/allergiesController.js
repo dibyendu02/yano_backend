@@ -68,6 +68,7 @@ exports.getAllergyById = async (req, res) => {
 // Update a specific allergy by ID
 exports.updateAllergy = async (req, res) => {
   try {
+    // Find the medical history for the user
     const medicalHistory = await MedicalHistory.findOne({
       userId: req.params.userId,
     });
@@ -76,7 +77,14 @@ exports.updateAllergy = async (req, res) => {
       return res.status(404).json({ message: "Medical history not found" });
     }
 
-    const allergy = medicalHistory.allergies.id(req.params.id);
+    // Find the allergy in the user's medical history
+    const allergy = medicalHistory.allergies.find((allergy) => {
+      if (allergy._id) {
+        return allergy._id.toString() === req.params.id;
+      }
+      return false;
+    });
+
     if (!allergy) {
       return res.status(404).json({ message: "Allergy not found" });
     }
@@ -91,12 +99,16 @@ exports.updateAllergy = async (req, res) => {
     if (req.body.dateOfFirstDiagnosis)
       allergy.dateOfFirstDiagnosis = req.body.dateOfFirstDiagnosis;
     if (req.body.medicine) allergy.medicine = req.body.medicine;
-    if (req.body.additionalNotes) allergy.notes = req.body.additionalNotes;
+    if (req.body.additionalNotes)
+      allergy.additionalNotes = req.body.additionalNotes;
 
+    // Mark the allergies array as modified
     medicalHistory.markModified("allergies");
 
+    // Save the updated medical history
     await medicalHistory.save();
 
+    // Respond with the updated allergy entry
     res.status(200).json(allergy);
   } catch (error) {
     res.status(400).json({ message: error.message });
