@@ -307,13 +307,24 @@ exports.createFamilyMember = async (req, res) => {
   }
 };
 
-//link family member
-
+// POST /api/patients/:patientId/family-link
 exports.linkFamilyMember = async (req, res) => {
-  const { patientId, familyMemberId } = req.params; // IDs of the existing patient and the family member
-  const { relation } = req.body;
+  const { patientId } = req.params; // ID of the existing patient to link the family member to
+  const { relation, firstName, lastName, userImg, familyMemberUserId } =
+    req.body; // Details of the family member
+
+  console.log(relation);
+  console.log(firstName);
+  console.log(lastName);
+  console.log(familyMemberUserId);
 
   try {
+    // Ensure that all required fields are provided
+    if (!relation || !firstName || !lastName || !familyMemberUserId) {
+      console.log("field missing");
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
     // Find the existing patient by ID
     const existingPatient = await UserPatient.findById(patientId);
 
@@ -321,14 +332,30 @@ exports.linkFamilyMember = async (req, res) => {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    // Add the new patient's userId to the familyLink array with the relation
+    // Check if the family member is already linked to the patient
+    const isAlreadyLinked = existingPatient.familyLink.some(
+      (link) => link.userId.toString() === familyMemberUserId
+    );
+
+    if (isAlreadyLinked) {
+      console.log("already linked");
+      return res
+        .status(400)
+        .json({ message: "Family member is already linked to this patient" });
+    }
+
+    // Add the family member to the patient's familyLink array
     existingPatient.familyLink.push({
       relation,
-      userId: familyMemberId,
+      name: `${firstName} ${lastName}`, // Full name
+      userImg, // Family member's user image (can be an URL or base64 string)
+      userId: familyMemberUserId, // Family member's user ID
     });
 
+    // Save the updated patient document
     await existingPatient.save();
 
+    // Respond with success and the updated familyLink
     res.status(200).json({
       message: "Family member linked successfully",
       updatedPatient: existingPatient,
@@ -363,6 +390,22 @@ exports.getFamilyLinkData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error retrieving family link data:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.findPatientByemail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const patient = await UserPatient.findOne({ email });
+
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    res.status(200).json({ userData: patient });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server error" });
   }
 };
