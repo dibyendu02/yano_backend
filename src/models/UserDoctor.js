@@ -19,7 +19,7 @@ const UserDoctorSchema = new Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phoneNumber: { type: String, unique: true },
+    phoneNumber: { type: String },
     gender: { type: String },
     dateOfBirth: { type: Date },
     speciality: { type: String },

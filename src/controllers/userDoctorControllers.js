@@ -36,13 +36,13 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Check if phone number already exists
-    if (phoneNumber) {
-      const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
-      if (existingPhoneNumber) {
-        return res.status(400).json({ message: "Phone number already exists" });
-      }
-    }
+    // // Check if phone number already exists
+    // if (phoneNumber) {
+    //   const existingPhoneNumber = await UserDoctor.findOne({ phoneNumber });
+    //   if (existingPhoneNumber) {
+    //     return res.status(400).json({ message: "Phone number already exists" });
+    //   }
+    // }
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
