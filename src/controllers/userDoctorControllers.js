@@ -219,8 +219,7 @@ exports.createPatient = async (req, res) => {
   console.log("Update data:", req.body);
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, phoneNumber, gender, dateOfBirth } =
-      req.body;
+    const { firstName, lastName, email, gender, dateOfBirth } = req.body;
 
     console.log(firstName, lastName, email, gender, dateOfBirth);
 
@@ -246,14 +245,6 @@ exports.createPatient = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Check if phone number already exists
-    // if (phoneNumber) {
-    //   const existingPhoneNumber = await UserPatient.findOne({ phoneNumber });
-    //   if (existingPhoneNumber) {
-    //     return res.status(400).json({ message: "Phone number already exists" });
-    //   }
-    // }
-
     let userImg = {};
     if (req.file) {
       const fileUri = getDataUri(req.file).content;
@@ -268,7 +259,6 @@ exports.createPatient = async (req, res) => {
       firstName,
       lastName,
       email,
-      // phoneNumber,
       gender,
       dateOfBirth,
     });

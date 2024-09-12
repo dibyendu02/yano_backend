@@ -14,7 +14,22 @@ exports.createMedicalHistory = async (req, res) => {
 // Get all medical history for a user
 exports.getMedicalHistory = async (req, res) => {
   try {
-    const history = await MedicalHistory.findOne({ userId: req.params.userId });
+    // Try to find the medical history for the user
+    let history = await MedicalHistory.findOne({ userId: req.params.userId });
+
+    // If no medical history exists, create a new one
+    if (!history) {
+      const newHistoryData = {
+        userId: req.params.userId,
+      };
+
+      history = new MedicalHistory(newHistoryData);
+      await history.save();
+
+      return res.status(201).json(history);
+    }
+
+    // If found, return the existing medical history
     res.status(200).json(history);
   } catch (error) {
     res.status(400).json({ message: error.message });
