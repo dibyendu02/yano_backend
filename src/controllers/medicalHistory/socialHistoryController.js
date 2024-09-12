@@ -5,20 +5,20 @@ const MedicalHistory = require("../../models/MedicalHistory");
 exports.createSocialHistory = async (req, res) => {
   try {
     const personsSocialHistory = await socialHistory.create({
-      occupation: req.body.occupation,
-      education: req.body.education,
-      placeOfBirth: req.body.placeOfBirth,
-      maritalStatus: req.body.maritalStatus,
-      numberOfChildren: req.body.numberOfChildren,
-      religion: req.body.religion,
-      diet: req.body.diet,
-      sexualOrientation: req.body.sexualOrientation,
-      doYouSmoke: req.body.doYouSmoke,
-      doYouConsumeAlcohol: req.body.doYouConsumeAlcohol,
-      useOfOtherSubstances: req.body.useOfOtherSubstances,
-      doYouExercise: req.body.doYouExercise,
-      stressFactor: req.body.stressFactor,
-      spokenLanguage: req.body.spokenLanguage,
+      occupation: req.body?.occupation,
+      education: req.body?.education,
+      placeOfBirth: req.body?.placeOfBirth,
+      maritalStatus: req.body?.maritalStatus,
+      numberOfChildren: req.body?.numberOfChildren,
+      religion: req.body?.religion,
+      diet: req.body?.diet,
+      sexualOrientation: req.body?.sexualOrientation,
+      doYouSmoke: req.body?.doYouSmoke,
+      doYouConsumeAlcohol: req.body?.doYouConsumeAlcohol,
+      useOfOtherSubstances: req.body?.useOfOtherSubstances,
+      doYouExercise: req.body?.doYouExercise,
+      stressFactor: req.body?.stressFactor,
+      spokenLanguage: req.body?.spokenLanguage,
     });
     const newEntry = await MedicalHistory.findOneAndUpdate(
       { userId: req.body.userId },
@@ -30,7 +30,8 @@ exports.createSocialHistory = async (req, res) => {
     }
     res.status(201).json(newEntry);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.log(error);
+    res.status(500).json({ message: error.message });
   }
 };
 

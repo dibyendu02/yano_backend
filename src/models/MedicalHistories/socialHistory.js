@@ -15,7 +15,7 @@ const EducationSchema = new Schema({
 const SocialHistorySchema = new Schema({
   occupation: {
     type: String,
-    required: true,
+    required: false,
   },
   education: {
     type: EducationSchema,
@@ -46,11 +46,11 @@ const SocialHistorySchema = new Schema({
     required: false,
   },
   doYouSmoke: {
-    type: Boolean,
+    type: String,
     required: false,
   },
   doYouConsumeAlcohol: {
-    type: Boolean,
+    type: String,
     required: false,
   },
   useOfOtherSubstances: {
