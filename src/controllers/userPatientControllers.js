@@ -366,6 +366,48 @@ exports.linkFamilyMember = async (req, res) => {
   }
 };
 
+// DELETE /api/patients/:patientId/family-link/:familyMemberUserId
+exports.removeFamilyMember = async (req, res) => {
+  const { patientId, familyMemberUserId } = req.params;
+
+  console.log(patientId);
+
+  try {
+    // Find the existing patient by ID
+    const existingPatient = await UserPatient.findById(patientId);
+
+    if (!existingPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Check if the family member is linked to the patient
+    const familyMemberIndex = existingPatient.familyLink.findIndex(
+      (link) => link.userId.toString() === familyMemberUserId
+    );
+
+    if (familyMemberIndex === -1) {
+      return res.status(404).json({
+        message: "Family member not found in the patient's family link",
+      });
+    }
+
+    // Remove the family member from the familyLink array
+    existingPatient.familyLink.splice(familyMemberIndex, 1);
+
+    // Save the updated patient document
+    await existingPatient.save();
+
+    // Respond with success and the updated familyLink
+    res.status(200).json({
+      message: "Family member removed successfully",
+      updatedPatient: existingPatient,
+    });
+  } catch (error) {
+    console.error("Error removing family member:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 //get family link data
 
 exports.getFamilyLinkData = async (req, res) => {
