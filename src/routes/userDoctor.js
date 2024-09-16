@@ -9,6 +9,8 @@ const {
   createPatient,
   findPatientByemail,
   addPatientInTheList,
+  getPatientsUnderDoctor,
+  removePatientFromDoctor,
 } = require("../controllers/userDoctorControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
@@ -33,5 +35,15 @@ router.post("/create-patient/:id", verifyToken, singleUpload, createPatient);
 router.post("/find-patient-by-email", verifyToken, findPatientByemail);
 
 router.put("/add-patient-in-list/:doctorId", verifyToken, addPatientInTheList);
+
+//get all patient under this doctor
+router.get(
+  "/patientsUnderDoctor/:doctorId",
+  verifyToken,
+  getPatientsUnderDoctor
+);
+
+// Remove a patient from a doctor's list
+router.delete("/:doctorId/patients/:patientId", removePatientFromDoctor);
 
 module.exports = router;

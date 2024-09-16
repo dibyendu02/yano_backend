@@ -218,7 +218,7 @@ exports.createPatient = async (req, res) => {
   console.log("Received file:", req.file);
   console.log("Update data:", req.body);
   try {
-    const { id } = req.params;
+    const { id } = req.params; // This id is the doctor's ID
     const { firstName, lastName, email, gender, dateOfBirth } = req.body;
 
     console.log(firstName, lastName, email, gender, dateOfBirth);
@@ -238,8 +238,14 @@ exports.createPatient = async (req, res) => {
       });
     }
 
+    // Find the doctor by ID
     const doctor = await UserDoctor.findById(id);
 
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Check if email already exists for a patient
     const existingEmail = await UserPatient.findOne({ email });
     if (existingEmail) {
       return res.status(400).json({ message: "Email already exists" });
@@ -268,12 +274,17 @@ exports.createPatient = async (req, res) => {
       return res.status(400).json({ message: "Failed to create patient" });
     }
 
+    // Add the new patient's ID to the doctor's patients array
+    doctor.patients.push(newPatient._id);
+
+    // Mark the patients array as modified
     doctor.markModified("patients");
 
+    // Save the updated doctor with the new patient in the patients list
     await doctor.save();
 
     res.status(201).json({
-      message: "Patient created successfully",
+      message: "Patient created and added to doctor's list successfully",
       userData: newPatient,
     });
   } catch (error) {
@@ -322,9 +333,76 @@ exports.addPatientInTheList = async (req, res) => {
 
     doctor.markModified("patients");
     await doctor.save();
-    res.status(200).json({ message: "Patient added successfully" });
+    res
+      .status(200)
+      .json({ message: "Patient added successfully", userData: patient });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getPatientsUnderDoctor = async (req, res) => {
+  const { doctorId } = req.params;
+  // console.log(doctorId);
+  try {
+    // Find the user by userId and populate the patient field
+    const doctor = await UserDoctor.findById(doctorId).populate(
+      "patients",
+      "firstName lastName userImg email dateOfBirth gender bloodType height weight"
+    );
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Return the familyLink data
+    res.status(200).json({
+      message: "patient data retrieved successfully",
+      patients: doctor.patients,
+    });
+  } catch (error) {
+    console.error("Error retrieving patient data:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// DELETE /api/doctors/:doctorId/patients/:patientId
+exports.removePatientFromDoctor = async (req, res) => {
+  const { doctorId, patientId } = req.params;
+
+  try {
+    // Find the doctor by ID
+    const doctor = await UserDoctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Check if the patient is in the doctor's patients array
+    const patientIndex = doctor.patients.findIndex(
+      (id) => id.toString() === patientId
+    );
+
+    if (patientIndex === -1) {
+      return res.status(404).json({
+        message: "Patient not found in the doctor's patients list",
+      });
+    }
+
+    // Remove the patient from the patients array
+    doctor.patients.splice(patientIndex, 1);
+
+    // Save the updated doctor document
+    await doctor.save();
+
+    // Respond with success and the updated patients list
+    res.status(200).json({
+      message: "Patient removed successfully",
+      updatedPatients: doctor.patients,
+    });
+  } catch (error) {
+    console.error("Error removing patient:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
