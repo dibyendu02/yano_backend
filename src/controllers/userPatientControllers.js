@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
 const UserPatient = require("../models/UserPatient");
+const MedicalHistory = require("../models/MedicalHistory");
 const { getDataUri } = require("../utils/feature"); // Adjust the path based on your project structure
 
 exports.patientSignup = async (req, res) => {
@@ -448,6 +449,89 @@ exports.findPatientByemail = async (req, res) => {
     res.status(200).json({ userData: patient });
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.deletePatientData = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Step 1: Delete specific fields (height, weight, bloodType) from UserPatient
+    const updatedPatient = await UserPatient.findByIdAndUpdate(
+      userId,
+      { $unset: { height: "", weight: "", bloodType: "" } },
+      { new: true }
+    );
+
+    if (!updatedPatient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    // Step 2: Delete the entire MedicalHistory document for the user
+    const medicalHistoryDeleted = await MedicalHistory.findOneAndDelete({
+      userId,
+    });
+
+    // Step 3: Delete all related records from other collections
+    // Note: This is optional if those records are only stored in the embedded subdocuments
+    // await HealthConditions.deleteMany({ userId });
+    // await FamilyHistory.deleteMany({ userId });
+    // await Allergies.deleteMany({ userId });
+    // await Medicine.deleteMany({ userId });
+    // await Surgeries.deleteMany({ userId });
+    // await Vaccine.deleteMany({ userId });
+    // await Hospitalizations.deleteMany({ userId });
+    // await SocialHistory.deleteMany({ userId });
+
+    res.status(200).json({
+      message: "Patient data and all medical histories deleted successfully",
+      userData: updatedPatient,
+      medicalHistoryDeleted,
+    });
+  } catch (error) {
+    console.error("Error deleting patient data:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.deleteUserAccount = async (req, res) => {
+  const { userId } = req.params;
+  const { password } = req.body;
+
+  try {
+    // Step 1: Find the user by ID
+    const user = await UserPatient.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Step 2: Verify the provided password with the stored hashed password
+    const isMatch = bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
+
+    // Step 3: Delete all associated medical history
+    await MedicalHistory.findOneAndDelete({ userId });
+
+    // await HealthConditions.deleteMany({ userId });
+    // await FamilyHistory.deleteMany({ userId });
+    // await Allergies.deleteMany({ userId });
+    // await Medicine.deleteMany({ userId });
+    // await Surgeries.deleteMany({ userId });
+    // await Vaccine.deleteMany({ userId });
+    // await Hospitalizations.deleteMany({ userId });
+    // await SocialHistory.deleteMany({ userId });
+
+    // Step 4: Delete the user account
+    await UserPatient.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      message: "User account and associated data deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting user account:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -11,9 +11,12 @@ const {
   getFamilyLinkData,
   findPatientByemail,
   removeFamilyMember,
+  deletePatientData,
+  deleteUserAccount,
 } = require("../controllers/userPatientControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
+const { sendEmailPatientData } = require("../controllers/sendEmail");
 
 // Signup route
 router.post("/signup", singleUpload, patientSignup);
@@ -25,6 +28,9 @@ router.post("/signup", singleUpload, patientSignup);
 
 // Find patient by ID route
 router.get("/:id", findPatientById);
+
+// Find patient by ID route and send email
+router.get("/send-email/:id", sendEmailPatientData);
 
 // update patient by ID route
 router.put("/:id", singleUpload, updatePatient);
@@ -49,5 +55,11 @@ router.delete(
   "/:patientId/family-link/:familyMemberUserId",
   removeFamilyMember
 );
+
+// Route to delete specific patient data and medical histories
+router.delete("/delete-data/:userId", verifyToken, deletePatientData);
+
+// Route to delete user account with password verification
+router.post("/delete-account/:userId", verifyToken, deleteUserAccount);
 
 module.exports = router;
