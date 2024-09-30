@@ -8,6 +8,8 @@ const BloodGlucoseSchema = new Schema(
     age: { type: Number, required: true },
     data: { type: Number, required: true },
     unit: { type: String, required: true, enum: ["mg/dL", "mmol/L"] }, // Assuming two common units
+    foodConsumed: { type: String },
+    note: { type: String },
   },
   { timestamps: true }
 );
