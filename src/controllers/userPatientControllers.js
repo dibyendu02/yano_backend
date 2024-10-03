@@ -192,12 +192,10 @@ exports.getAllPatients = async (req, res) => {
   }
 };
 
+//update patient
 exports.updatePatient = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
-
-  // console.log("Received file:", req.file); // This should log the file buffer and metadata
-  // console.log("Update data:", updateData); // Log form data
 
   try {
     let userImg = {};
@@ -206,8 +204,6 @@ exports.updatePatient = async (req, res) => {
         req.file.mimetype
       };base64,${req.file.buffer.toString("base64")}`;
       const result = await cloudinary.uploader.upload(fileUri);
-
-      console.log("img uri ", result);
 
       userImg.public_id = result.public_id;
       userImg.secure_url = result.secure_url;
@@ -218,20 +214,52 @@ exports.updatePatient = async (req, res) => {
       updateData.userImg = userImg;
     }
 
-    // Find the patient by ID and update with the data provided in the request body
-    const patient = await UserPatient.findOneAndUpdate(
-      { _id: id },
-      { $set: updateData },
-      { new: true }
-    );
-
+    // Find the patient by ID
+    const patient = await UserPatient.findById(id);
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
+    // Conditionally update each field if it exists in the request body
+    if (updateData.firstName) patient.firstName = updateData.firstName;
+    if (updateData.lastName) patient.lastName = updateData.lastName;
+    if (updateData.email) patient.email = updateData.email;
+    if (updateData.phoneNumber) patient.phoneNumber = updateData.phoneNumber;
+    if (updateData.gender) patient.gender = updateData.gender;
+    if (updateData.dateOfBirth)
+      patient.dateOfBirth = new Date(updateData.dateOfBirth);
+    if (updateData.height) patient.height = updateData.height;
+    if (updateData.weight) patient.weight = updateData.weight;
+    if (updateData.bloodType) patient.bloodType = updateData.bloodType;
+    if (updateData.isActive !== undefined)
+      patient.isActive = updateData.isActive;
+    if (updateData.emergencyContactName)
+      patient.emergencyContactName = updateData.emergencyContactName;
+    if (updateData.emergencyContactPhone)
+      patient.emergencyContactPhone = updateData.emergencyContactPhone;
+
+    // Only process device data if it exists in the request
+    if (req.body.devices && req.body.devices.length > 0) {
+      const glucometerIndex = patient.devices.findIndex(
+        (device) => device.deviceType === "glucometer"
+      );
+
+      if (glucometerIndex !== -1) {
+        // Update the serial number of the existing glucometer
+        patient.devices[glucometerIndex].deviceSerialNumber =
+          req.body.devices[0].deviceSerialNumber;
+      } else {
+        // Add the new device to the list if no glucometer exists
+        patient.devices.push(req.body.devices[0]);
+      }
+    }
+
+    // Save the updated patient data
+    const updatedPatient = await patient.save();
+
     res.status(200).json({
       message: "Patient updated successfully",
-      userData: patient,
+      userData: updatedPatient,
     });
   } catch (error) {
     console.error("Error updating patient:", error);
