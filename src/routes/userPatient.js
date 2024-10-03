@@ -13,10 +13,14 @@ const {
   removeFamilyMember,
   deletePatientData,
   deleteUserAccount,
+  verifyEmailOTP,
 } = require("../controllers/userPatientControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
-const { sendEmailPatientData } = require("../controllers/sendEmail");
+const {
+  sendEmailPatientData,
+  sendEmailVerificationOTP,
+} = require("../controllers/sendEmail");
 
 // Signup route
 router.post("/signup", singleUpload, patientSignup);
@@ -61,5 +65,11 @@ router.delete("/delete-data/:userId", verifyToken, deletePatientData);
 
 // Route to delete user account with password verification
 router.post("/delete-account/:userId", verifyToken, deleteUserAccount);
+
+// Route to send email OTP
+router.post("/send-otp", sendEmailVerificationOTP);
+
+// Route to verify email OTP
+router.post("/verify-otp", verifyEmailOTP);
 
 module.exports = router;

@@ -98,7 +98,7 @@ exports.sendEmailPatientData = async (req, res) => {
         secure: true,
         auth: {
           user: "sonaliasrtech@gmail.com",
-          pass: "hgfuwxcdhfsgibsh", // replace with your real credentials
+          pass: process.env.EMAIL_PASSWORD, // replace with your real credentials
         },
       });
 
@@ -135,6 +135,62 @@ exports.sendEmailPatientData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error finding patient by ID:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Function to generate OTP and send email
+exports.sendEmailVerificationOTP = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await UserPatient.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Set OTP expiration to 10 minutes from now
+    const otpExpires = Date.now() + 10 * 60 * 1000;
+
+    // Save the OTP and expiration time in the database
+    user.otp = otp;
+    user.otpExpires = otpExpires;
+    await user.save();
+
+    // Send OTP via email using nodemailer
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "sonaliasrtech@gmail.com",
+        pass: process.env.EMAIL_PASSWORD, // replace with your real credentials
+      },
+    });
+
+    const mailOptions = {
+      from: "sonaliasrtech@gmail.com",
+      to: email,
+      subject: "Your OTP for Email Verification",
+      text: `Your OTP for email verification is ${otp}. It will expire in 10 minutes.`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({ message: "Error sending email" });
+      } else {
+        res.status(200).json({ message: `OTP sent to ${email}` });
+      }
+    });
+  } catch (error) {
+    console.error("Error generating OTP:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

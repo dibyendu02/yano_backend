@@ -51,6 +51,8 @@ const UserPatientSchema = new Schema(
     isActive: { type: Boolean, default: true },
     emergencyContactName: { type: String },
     emergencyContactPhone: { type: String },
+    otp: { type: String },
+    otpExpires: { type: Date },
   },
   { timestamps: true }
 );
