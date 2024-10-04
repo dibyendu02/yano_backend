@@ -217,6 +217,7 @@ exports.updatePatient = async (req, res) => {
     // Find the patient by ID
     const patient = await UserPatient.findById(id);
     if (!patient) {
+      console.log("patient not found");
       return res.status(404).json({ message: "Patient not found" });
     }
 
@@ -589,6 +590,75 @@ exports.verifyEmailOTP = async (req, res) => {
     res.status(200).json({ message: "Email verified successfully" });
   } catch (error) {
     console.error("Error verifying OTP:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.addGlucometer = async (req, res) => {
+  const { userId } = req.params;
+  const glucometerData = req.body;
+
+  console.log(glucometerData);
+
+  try {
+    const patient = await UserPatient.findById(userId);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const glucometerIndex = patient.devices.findIndex(
+      (device) => device.deviceType === "glucometer"
+    );
+    if (glucometerIndex == -1) {
+      patient.devices.push(glucometerData);
+    } else {
+      return res
+        .status(500)
+        .json({ message: "Patient already have glucometer" });
+    }
+
+    // Save the updated patient data
+    const updatedPatient = await patient.save();
+
+    res.status(200).json({
+      message: "glucometer added successfully",
+      userData: updatedPatient,
+    });
+  } catch (error) {
+    console.error("Error deleting glucometer:", error);
+    res.status(404).json({ message: "Server error" });
+  }
+};
+
+exports.deleteGlucometer = async (req, res) => {
+  const { userId } = req.params;
+  // console.log(userId);
+  try {
+    const patient = await UserPatient.findById(userId);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    const glucometerIndex = patient.devices.findIndex(
+      (device) => device.deviceType === "glucometer"
+    );
+    if (glucometerIndex == -1) {
+      return res
+        .status(404)
+        .json({ message: "Patient doesnot have any glucometer" });
+    } else {
+      patient.devices.pop();
+    }
+
+    // Save the updated patient data
+    const updatedPatient = await patient.save();
+
+    res.status(200).json({
+      message: "glucometer device deleted successfully",
+      userData: updatedPatient,
+    });
+  } catch (error) {
+    console.error("Error deleting glucometer:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

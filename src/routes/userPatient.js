@@ -14,6 +14,8 @@ const {
   deletePatientData,
   deleteUserAccount,
   verifyEmailOTP,
+  deleteGlucometer,
+  addGlucometer,
 } = require("../controllers/userPatientControllers");
 const { singleUpload } = require("../middlewares/multer");
 const { verifyToken } = require("../middlewares/VerifyToken");
@@ -37,7 +39,7 @@ router.get("/:id", findPatientById);
 router.get("/send-email/:id", sendEmailPatientData);
 
 // update patient by ID route
-router.put("/:id", singleUpload, updatePatient);
+router.put("/:id", singleUpload, verifyToken, updatePatient);
 
 //get all patients
 router.get("/", getAllPatients);
@@ -71,5 +73,11 @@ router.post("/send-otp", sendEmailVerificationOTP);
 
 // Route to verify email OTP
 router.post("/verify-otp", verifyEmailOTP);
+
+//remove glucometer
+router.post("/glucometer/:userId", verifyToken, addGlucometer);
+
+//remove glucometer
+router.delete("/glucometer/:userId", verifyToken, deleteGlucometer);
 
 module.exports = router;
